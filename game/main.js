@@ -6,7 +6,7 @@ let previousTime;
 function init() {
     resizeCanvas();
     createBarriers();
-    gameLoop();
+    requestAnimationFrame(gameLoop);
 }
 
 function update(deltaTime) {
@@ -14,11 +14,9 @@ function update(deltaTime) {
 }
 
 function draw() {
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-
     ctx.fillStyle = 'black';
     ctx.fillRect(0, 0, canvas.width, canvas.height);
-    drawBarriers(ctx, canvas);
+    drawBarriers();
 }
 
 function gameLoop(currentTime) {
@@ -28,7 +26,7 @@ function gameLoop(currentTime) {
         return;
     }
 
-    const deltaTime = (currentTime - previousTime) / 1000;
+    const deltaTime = Math.min(((currentTime - previousTime) / 1000), 0.05);
     previousTime = currentTime;
 
     update(deltaTime);

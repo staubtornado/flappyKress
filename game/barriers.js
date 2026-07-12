@@ -37,9 +37,13 @@ function updateBarriers(deltaTime) {
         barrier.update(deltaTime);
     });
 
-    if (barriers.at(0).isOutsideCanvas()) {
-        barriers.splice(0, 1);
-        barriers.push(createRandomBarrier(10));
+    while (barriers.length > 0 && barriers[0].isOutsideCanvas()) {
+        barriers.shift();
+
+        const lastBarrier = barriers.at(-1);
+        const newX = lastBarrier.x + barrierDistance;
+
+        barriers.push(createRandomBarrierAt(newX));
     }
 }
 
@@ -51,13 +55,14 @@ function drawBarriers() {
 
 
 function createBarriers() {
+    barriers.length = 0;
     for (let i = 0; i < 10; i++) {
-        barriers.push(createRandomBarrier(i));
+        const x = i * (barrierDistance);
+        barriers.push(createRandomBarrierAt(x));
     }
 }
 
-function createRandomBarrier(at) {
-    const x = (barrierWidth + barrierDistance) * at;
+function createRandomBarrierAt(x) {
     const gapY = Math.random() * (canvas.height - barrierGapHeight);
     return new Barrier(x, gapY);
 }
