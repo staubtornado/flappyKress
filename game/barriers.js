@@ -1,70 +1,56 @@
-const barrierWidth = 80
-const barrierDistance = 350
-const barrierSpeed = 120;
-const barrierGapHeight = 220
+class Barriers {
+    constructor(canvas, ctx, options = {}) {
+        this.canvas = canvas;
+        this.ctx = ctx;
+        this.width = options.width ?? 80;
+        this.distance = options.distance ?? 350;
+        this.speed = options.speed ?? 120;
+        this.gapHeight = options.gapHeight ?? 220;
+        this.count = options.count ?? 10;
+        this.barriers = [];
+    }
 
-class Barrier {
-    constructor(x, gapY) {
-        this.x = x;
-        this.gapY = gapY;
+    reset() {
+        this.barriers = [];
+
+        for (let index = 0; index < this.count; index++) {
+            this.barriers.push(this.createRandomBarrier(index * this.distance));
+        }
     }
 
     update(deltaTime) {
-        this.x -= barrierSpeed * deltaTime;
+        this.barriers.forEach(barrier => {
+            barrier.x -= this.speed * deltaTime;
+        });
+
+        while (this.barriers[0]?.x + this.width < 0) {
+            this.barriers.shift();
+
+            const lastBarrier = this.barriers.at(-1);
+            this.barriers.push(this.createRandomBarrier(lastBarrier.x + this.distance));
+        }
     }
 
-    draw(ctx, canvasHeight) {
-        const bottomY = this.gapY + barrierGapHeight;
-        const bottomHeight = canvasHeight - bottomY;
+    draw() {
+        this.ctx.fillStyle = '#CCFF00';
 
-        ctx.fillStyle = '#CCFF00';
-        ctx.fillRect(this.x, 0, barrierWidth, this.gapY)
-        ctx.fillRect(this.x, bottomY, barrierWidth, bottomHeight);
+        this.barriers.forEach(barrier => {
+            const bottomY = barrier.gapY + this.gapHeight;
+
+            this.ctx.fillRect(barrier.x, 0, this.width, barrier.gapY);
+            this.ctx.fillRect(barrier.x, bottomY, this.width, this.canvas.height - bottomY);
+        });
     }
 
-    isOutsideCanvas() {
-        return this.x + barrierWidth < 0;
+    getStartingGapY(playerHeight = 20) {
+        const firstBarrier = this.barriers[0];
+        return firstBarrier.gapY + (this.gapHeight - playerHeight) / 2;
     }
-}
 
-const barriers = [];
+    createRandomBarrier(x) {
+        const availableHeight = Math.max(0, this.canvas.height - this.gapHeight);
+        const gapY = Math.random() * availableHeight;
 
-
-function updateBarriers(deltaTime) {
-    barriers.forEach(barrier => {
-        barrier.update(deltaTime);
-    });
-
-    while (barriers.length > 0 && barriers[0].isOutsideCanvas()) {
-        barriers.shift();
-
-        const lastBarrier = barriers.at(-1);
-        const newX = lastBarrier.x + barrierDistance;
-
-        barriers.push(createRandomBarrierAt(newX));
+        return {x, gapY};
     }
-}
-
-function drawBarriers() {
-    barriers.forEach(barrier => {
-        barrier.draw(ctx, canvas.height);
-    });
-}
-
-
-function initBarriers() {
-    barriers.length = 0;
-    for (let i = 0; i < 10; i++) {
-        const x = i * (barrierDistance);
-        barriers.push(createRandomBarrierAt(x));
-    }
-}
-
-function getStartingGapY() {
-    return barriers[0].gapY + barrierGapHeight / 2;
-}
-
-function createRandomBarrierAt(x) {
-    const gapY = Math.random() * (canvas.height - barrierGapHeight);
-    return new Barrier(x, gapY);
 }

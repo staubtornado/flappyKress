@@ -1,24 +1,30 @@
 let previousTime;
 
 let player;
+let barriers;
 
 function init() {
     resizeCanvas();
-    initBarriers();
+    barriers = new Barriers(canvas, ctx);
+    resetGame();
 
-    player = new Player(0, getStartingGapY());
     requestAnimationFrame(gameLoop);
 }
 
+function resetGame() {
+    barriers.reset();
+    player = new Player(0, barriers.getStartingGapY());
+}
+
 function update(deltaTime) {
-    updateBarriers(deltaTime);
+    barriers.update(deltaTime);
     player.update(deltaTime);
 }
 
 function draw() {
     ctx.fillStyle = '#1A1A1D';
     ctx.fillRect(0, 0, canvas.width, canvas.height);
-    drawBarriers();
+    barriers.draw();
     player.draw();
 }
 
@@ -37,4 +43,7 @@ function gameLoop(currentTime) {
     requestAnimationFrame(gameLoop);
 }
 init();
-window.addEventListener('resize', resizeCanvas);
+window.addEventListener('resize', () => {
+    resizeCanvas();
+    resetGame();
+});
