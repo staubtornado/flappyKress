@@ -6,9 +6,3 @@ function resizeCanvas() {
     canvas.width = window.innerWidth;
     canvas.height = window.innerHeight;
 }
-
-export {
-    canvas,
-    ctx,
-    resizeCanvas
-};
