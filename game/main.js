@@ -2,6 +2,7 @@ let previousTime;
 
 let player;
 let barriers;
+const keyboard = new Keyboard();
 
 function init() {
     resizeCanvas();
@@ -13,12 +14,13 @@ function init() {
 
 function resetGame() {
     barriers.reset();
-    player = new Player(0, barriers.getStartingGapY());
+    player = new Player(0, barriers.getStartingGapY(), keyboard);
 }
 
 function update(deltaTime) {
     barriers.update(deltaTime);
     player.update(deltaTime);
+    keyboard.endFrame();
 }
 
 function draw() {
