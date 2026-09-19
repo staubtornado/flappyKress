@@ -2,27 +2,32 @@ class Player {
     constructor(x, y, keyboard) {
         this.x = x;
         this.y = y;
+        this.width = 40;
+        this.height = 40;
         this.keyboard = keyboard;
-        this.baseY = y;
-        this.hoverTime = 0;
-        this.hoverAmplitude = 12;
-        this.hoverSpeed = 3;
+        this.velocityY = 0;
+        this.gravity = 800;
+        this.jumpSpeed = 360;
     }
 
     update(deltaTime) {
-        if (this.keyboard.wasPressed('ArrowUp')) {
-            this.baseY -= 100;
+        if (this.keyboard.wasPressed('Space')) {
+            this.jump();
         }
-        if (this.keyboard.wasPressed('ArrowDown')) {
-            this.baseY += 100;
-        }
+        this.fall(deltaTime);
+    }
 
-        this.hoverTime += deltaTime;
-        this.y = this.baseY + Math.sin(this.hoverTime * this.hoverSpeed) * this.hoverAmplitude;
+    jump() {
+        this.velocityY = -this.jumpSpeed;
+    }
+
+    fall(deltaTime) {
+        this.y += this.velocityY * deltaTime + 0.5 * this.gravity * deltaTime * deltaTime;
+        this.velocityY += this.gravity * deltaTime;
     }
 
     draw() {
         ctx.fillStyle = '#00F0FF';
-        ctx.fillRect(this.x, this.y, 40, 40);
+        ctx.fillRect(this.x, this.y, this.width, this.height);
     }
 }

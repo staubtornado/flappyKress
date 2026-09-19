@@ -14,13 +14,17 @@ function init() {
 
 function resetGame() {
     barriers.reset();
-    player = new Player(0, barriers.getStartingGapY(), keyboard);
+    player = new Player(35, barriers.getStartingGapY(), keyboard);
 }
 
 function update(deltaTime) {
     barriers.update(deltaTime);
     player.update(deltaTime);
     keyboard.endFrame();
+
+    if (barriers.collidesWith(player) || player.y < 0 || player.y >= canvas.height) {
+        resetGame();
+    }
 }
 
 function draw() {

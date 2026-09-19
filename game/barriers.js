@@ -42,7 +42,20 @@ class Barriers {
         });
     }
 
-    getStartingGapY(playerHeight = 20) {
+    collidesWith(player) {
+        const barrier = this.barriers.at(0);
+        const overlapsX = player.x < barrier.x + this.width &&
+            player.x + player.width > barrier.x;
+        const bottomY = barrier.gapY + this.gapHeight;
+        const overlapsTop = barrier.gapY > 0 &&
+            player.y < barrier.gapY && player.y + player.height > 0;
+        const overlapsBottom = bottomY < this.canvas.height &&
+            player.y < this.canvas.height && player.y + player.height > bottomY;
+
+        return overlapsX && (overlapsTop || overlapsBottom);
+    }
+
+    getStartingGapY(playerHeight = 40) {
         const firstBarrier = this.barriers[0];
         return firstBarrier.gapY + (this.gapHeight - playerHeight) / 2;
     }
